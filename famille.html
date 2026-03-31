@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>La Famille - Drakk'Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VARIABLES GLOBALES --- */
+        :root {
+            --drakk-color: #986835;
+            --drakk-dark: #5e3b18;
+            --parchment: #fdfbf7;
+            --text-dark: #2d1b0e;
+            --gold: #ffd700;
+            --gold-dim: #c5a059; /* Doré plus doux pour le texte */
+            --card-bg: #fffcf5;
+            --footer-bg: #2d1b0e; /* Fond footer très sombre */
+        }
+
+        /* --- RESET ET BASE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--parchment);
+            color: var(--text-dark);
+            font-family: 'Cinzel', serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Classe pour bloquer le scroll quand la modale est ouverte */
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* --- NAVBAR (Header) --- */
+        .viking-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 110px;
+            padding: 0 5%;
+            background: linear-gradient(180deg, #a6733c 0%, var(--drakk-color) 40%, var(--drakk-color) 100%);
+            border-bottom: 4px solid var(--drakk-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+
+        .viking-nav.shrunk {
+            min-height: 70px;
+        }
+
+        .nav-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1001;
+            flex-shrink: 1;
+        }
+
+        .main-logo {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+            transition: height 0.4s ease, width 0.4s ease;
+        }
+
+        .shrunk .main-logo {
+            height: 45px;
+            width: 45px;
+        }
+
+        .nav-logo a {
+            color: white;
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-weight: 900;
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--drakk-dark);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
+        .jv-btn {
+            background-color: var(--drakk-dark);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+        }
+
+        /* Burger Menu Elements */
+        .burger {
+            display: none;
+            cursor: pointer;
+            z-index: 2001;
+        }
+
+        .burger div {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 5px;
+            transition: 0.3s;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero { padding: 60px 20px; text-align: center; }
+        .hero h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            color: var(--drakk-dark);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .hero h1::after, .hero h1::before {
+            content: "";
+            display: block;
+            width: 60%;
+            height: 3px;
+            background: var(--drakk-color);
+            margin: 10px auto;
+        }
+
+        /* --- STRUCTURE DE LA GRILLE FAMILLE --- */
+        .family-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .family-intro {
+            text-align: center;
+            max-width: 800px;
+            margin: 40px auto -20px;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            color: var(--drakk-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 0 20px;
+            line-height: 1.4;
+        }
+
+        .pole-title {
+            text-align: center;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            color: var(--drakk-dark);
+            margin: 60px 0 30px;
+            text-transform: uppercase;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .pole-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--drakk-color);
+        }
+
+        .member-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        /* --- CARTE MEMBRE --- */
+        .member-card {
+            background: var(--card-bg);
+            width: calc(33.33% - 30px);
+            min-width: 280px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e0dcd0;
+            transition: transform 0.3s ease;
+            text-align: center;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .member-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .member-photo {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 4px solid var(--drakk-color);
+        }
+
+        .member-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .member-name {
+            font-size: 1.2rem;
+            color: var(--drakk-dark);
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .member-role {
+            font-size: 0.85rem;
+            color: var(--drakk-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Le bouton qui remplace la description */
+        .desc-trigger {
+            background-color: transparent;
+            border: 2px solid var(--drakk-color);
+            color: var(--drakk-color);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-top: auto; /* Pousse le bouton vers le bas */
+        }
+
+        .desc-trigger:hover {
+            background-color: var(--drakk-color);
+            color: white;
+        }
+
+        /* On cache la description dans la carte */
+        .member-desc-hidden {
+            display: none;
+        }
+
+        /* --- FENÊTRE MODALE (POP-UP) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Fond sombre */
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px); /* Flou arrière plan */
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background: var(--card-bg);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23fffcf5"/><path d="M0 0l100 100M100 0L0 100" stroke="%23f0eadd" stroke-width="0.5" opacity="0.5"/></svg>'); /* Léger motif parchemin */
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            border-radius: 15px;
+            border: 3px solid var(--drakk-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 40px;
+            position: relative;
+            overflow-y: auto; /* Scroll interne si texte trop long */
+            
+            /* Animation d'entrée */
+            transform: scale(0.7);
+            transition: transform 0.4s ease;
+            text-align: center;
+        }
+
+        .modal-overlay.open .modal-card {
+            transform: scale(1);
+        }
+
+        /* Bouton Fermer (X) */
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            color: var(--drakk-dark);
+            cursor: pointer;
+            font-weight: bold;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: #800000; /* Rouge sang au survol */
+        }
+
+        /* Contenu de la modale */
+        .modal-body-name {
+            font-size: 1.8rem;
+            color: var(--drakk-dark);
+            margin-bottom: 5px;
+            border-bottom: 2px solid var(--drakk-color);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .modal-body-role {
+            font-size: 1rem;
+            color: var(--drakk-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .modal-body-desc {
+            font-family: 'Arial', sans-serif; /* Plus lisible pour long texte */
+            font-size: 1rem;
+            color: #444;
+            line-height: 1.6;
+            text-align: justify; /* Propre */
+            hyphens: auto;
+        }
+
+        /* Ajout de petits ornements vikings fictifs autour du titre dans la modale */
+        .modal-body-name::before, .modal-body-name::after {
+            content: ' ᛟ '; /* Rune fictive */
+            color: var(--drakk-color);
+            opacity: 0.5;
+            font-size: 1.2rem;
+        }
+
+        /* --- FOOTER (AMÉLIORÉ) --- */
+        .viking-footer {
+            background-color: var(--footer-bg);
+            /* Ajout d'une texture discrète style bois/cuir sombre en fond */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill-rule="evenodd"><g fill="%233e2714" fill-opacity="0.2"><path d="M0 40h10V30H0v10zm10-10h10V20H10v10zm10-10h10V10H20v10zm10-10h10V0H30v10zM0 30h10V20H0v10zm10-10h10V10H10v10zm10-10h10V0H20v10zM0 20h10V10H0v10zm10-10h10V0H10v10zM0 10h10V0H0v10z"/></g></g></svg>'),
+                             linear-gradient(180deg, var(--drakk-dark) 0%, var(--footer-bg) 100%);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 80px 5% 30px 5%;
+            /* Bordure supérieure style or martelé */
+            border-top: 8px solid;
+            border-image: linear-gradient(to right, #8e6e46, var(--gold), #a6733c, var(--gold), #8e6e46) 1;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        /* Petit ornement central sur la bordure */
+        .viking-footer::before {
+            content: 'ᛦ D ᛦ';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--drakk-dark);
+            color: var(--gold);
+            padding: 0 15px;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            border-radius: 5px;
+            border: 2px solid var(--gold);
+            z-index: 1;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 40px;
+        }
+
+        .footer-box {
+            flex: 1;
+        }
+
+        /* Style Section École */
+        .school-box {
+            text-align: left;
+        }
+
+        .school-logo-link {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .school-logo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .school-logo {
+            height: 70px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        .school-box p {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Style Section Social (Améliorée) */
+        .social-box {
+            text-align: right;
+        }
+
+        .social-box h3 {
+            color: var(--gold);
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .social-box h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: 0;
+            width: 60px;
+            height: 2px;
+            background: var(--gold);
+        }
+
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .social-link:hover {
+            color: var(--gold);
+            transform: translateX(-5px);
+        }
+
+        /* Logos SVG */
+        .social-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            fill: var(--gold-dim); /* Doré moins flash par défaut */
+            transition: fill 0.3s ease, filter 0.3s ease;
+        }
+
+        .social-link:hover .social-icon {
+            fill: var(--gold);
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+        }
+
+        /* Bas du Footer */
+        .footer-bottom {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
+            font-family: 'Arial', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* --- MEDIA QUERIES --- */
+
+        /* Tablette et Desktop moyen : 2 colonnes */
+        @media screen and (max-width: 1100px) {
+            .member-card { width: calc(50% - 30px); }
+        }
+
+        /* ─── MOBILE : 980px et moins ─── */
+        @media screen and (max-width: 980px) {
+
+            /* ── Navbar (identique à index.html) ── */
+            .viking-nav {
+                min-height: 75px;
+                padding: 0 20px;
+            }
+
+            .main-logo { height: 55px; width: 55px; }
+            .shrunk .main-logo { height: 40px; width: 40px; }
+            .nav-logo a { font-size: 1.1rem; }
+
+            .nav-links {
+                position: fixed;
+                right: 0;
+                top: 0;
+                height: 100vh;
+                width: 75%;
+                max-width: 320px;
+                background: linear-gradient(160deg, var(--drakk-dark) 0%, #1a0e06 100%);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                gap: 8px;
+                box-shadow: -8px 0 30px rgba(0,0,0,0.6);
+                z-index: 2000;
+                padding: 20px;
+            }
+
+            .nav-links li { width: 100%; text-align: center; }
+
+            .nav-links li a {
+                display: block;
+                font-size: 1rem;
+                padding: 14px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                letter-spacing: 1.5px;
+                color: #fdfbf7;
+            }
+
+            .nav-links li:last-child a { border-bottom: none; }
+
+            .jv-btn {
+                margin-top: 12px;
+                border-radius: 6px;
+                border-width: 2px;
+            }
+
+            .burger { display: block; z-index: 2001; }
+            .nav-active { transform: translateX(0%); }
+
+            /* ── Hero ── */
+            .hero {
+                padding: 35px 20px 20px;
+            }
+
+            .hero h1 {
+                font-size: clamp(1.5rem, 7vw, 2.2rem);
+            }
+
+            /* ── Section famille ── */
+            .family-section {
+                margin: 20px auto;
+                padding: 0 14px;
+            }
+
+            .family-intro {
+                font-size: clamp(0.85rem, 3.5vw, 1rem);
+                margin: 20px auto -10px;
+                letter-spacing: 1px;
+            }
+
+            /* ── Titre de pôle ── */
+            .pole-title {
+                font-size: clamp(1.3rem, 5vw, 1.8rem);
+                margin: 40px 0 18px;
+            }
+
+            /* ── Grille membres : 1 colonne ── */
+            .member-grid {
+                gap: 14px;
+            }
+
+            /* ── Carte membre : layout horizontal ── */
+            .member-card {
+                width: 100%;
+                min-width: unset;
+                flex-direction: row;
+                padding-bottom: 0;
+                text-align: left;
+                align-items: stretch;
+            }
+
+            .member-card:hover {
+                transform: translateY(-3px);
+            }
+
+            .member-photo {
+                width: 115px;
+                min-width: 115px;
+                height: auto;
+                min-height: 140px;
+                object-fit: cover;
+                object-position: center top;
+                border-bottom: none;
+                border-right: 4px solid var(--drakk-color);
+                flex-shrink: 0;
+            }
+
+            .member-content {
+                padding: 12px 14px 14px;
+                justify-content: space-between;
+                gap: 6px;
+            }
+
+            .member-name {
+                font-size: clamp(0.8rem, 3vw, 0.95rem);
+                line-height: 1.3;
+                margin-bottom: 4px;
+            }
+
+            .member-role {
+                font-size: 0.72rem;
+                margin-bottom: 10px;
+            }
+
+            .desc-trigger {
+                font-size: 0.72rem;
+                padding: 7px 10px;
+                margin-top: 0;
+                align-self: flex-start;
+            }
+
+            /* ── Modale ── */
+            .modal-card {
+                width: 92%;
+                max-height: 85vh;
+                padding: 30px 20px;
+            }
+
+            .modal-body-name { font-size: 1.4rem; }
+            .modal-body-role { font-size: 0.9rem; }
+            .modal-body-desc { font-size: 0.9rem; }
+
+            /* ── Footer (identique à index.html) ── */
+            .viking-footer { padding: 60px 20px 25px; }
+
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .school-box { text-align: center; }
+            .social-box { text-align: center; }
+            .social-links { align-items: center; }
+            .social-box h3::after { left: 50%; transform: translateX(-50%); right: auto; }
+        }
+
+        /* ─── TRÈS PETITS TÉLÉPHONES : 480px et moins ─── */
+        @media screen and (max-width: 480px) {
+
+            .viking-nav { min-height: 65px; padding: 0 14px; }
+            .main-logo { height: 46px; width: 46px; }
+            .nav-logo a { font-size: 1rem; }
+            .nav-links { width: 85%; }
+
+            .member-photo {
+                width: 90px;
+                min-width: 90px;
+                min-height: 120px;
+            }
+
+            .member-name { font-size: 0.78rem; }
+
+            .modal-card { padding: 22px 14px; }
+            .modal-body-name { font-size: 1.2rem; }
+        }
+
+        .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
+        .toggle .line2 { opacity: 0; }
+        .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
+    </style>
+</head>
+<body>
+
+    <nav class="viking-nav" id="navbar">
+        <div class="nav-logo-container">
+            <img src="images/LogoDrakkartRaster.png" alt="Logo" class="main-logo">
+            <div class="nav-logo"><a href="index.html">DRAKK'ART</a></div>
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html">Le Village</a></li>
+            <li><a href="famille.html" style="color: var(--gold);">La Famille</a></li>
+            <li><a href="saga.html">La Saga</a></li>
+            <li><a href="forge.html">La Forge</a></li>
+            <li><a href="clans.html">Les Clans</a></li>
+            <li><a href="conquete.html" class="jv-btn">La Conquête</a></li>
+        </ul>
+        <div class="burger" id="burger">
+            <div class="line1"></div><div class="line2"></div><div class="line3"></div>
+        </div>
+    </nav>
+
+    <div class="family-section">
+        <section class="hero">
+            <h1>La famille des DRAKKS</h1>
+        </section>
+
+        <p class="family-intro">
+            Vous l'attendiez tous, les voici les voilà, les plus grands vikings que le monde n'ait jamais connus
+        </p>
+
+        <h2 class="pole-title">Bureau Étendu</h2>
+        <div class="member-grid">
+            <div class="member-card">
+                <img src="images/trombi/Quentin.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Quentin PICHON-AMBLARD <br>"Respo gode"</h2>
+                        <span class="member-role">Président</span>
+                    </div>
+                    <div class="member-desc-hidden">De son totem beige de 25 cm il nous guide, bravant les tempêtes les plus violentes, au bord de la mutinerie et dans les combats les plus acharnés. Sans lui nous ne serons rien, sa lumière nous a apporté espoir. C’est le capitaine de ce drakkar dont la bienveillance et la douceur continuent de voyager par delà les mers.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Cédrick.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Cédrick LI <br> "Singe originel"</h2>
+                        <span class="member-role">Secrétaire</span>
+                    </div>
+                    <div class="member-desc-hidden">Il a été le premier d'une longue lignée... Si vous pensez à une connerie il l'a sans doute déjà faite. C'est notre seul et unique... secrétaire.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Léia.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Léia BISCHOFF <br>"Dictatrice"</h2>
+                        <span class="member-role">Trésorière</span>
+                    </div>
+                    <div class="member-desc-hidden">Tremble simple mortel, laisse place à notre grande et terrifiante dictactrice ! Nous ne sommes que de simple ressources (des comptes Bourso) pour elle, tremblantes devant son regard. La contester c'est signer son arrêt de mort, mais c'est pour cela qu'on l'adore. </div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Heiva.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Heiva POIRY <br>"Gna gna gna …"</h2>
+                        <span class="member-role">VPE</span>
+                    </div>
+                    <div class="member-desc-hidden">Sur le drakkar on n'entend qu'elle se plaindre, bourrée ou non elle continue de partager ses idées les plus originales. Si elle est encore sur le pont, c'est grâce à son énergie qui en fait une membre essentielle de l'équipage, et sa bonne humeur apporte beaucoup de joie à tous ceux qui font naufrage.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Paul.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Paul DELPLANQUE <br>"Crous ou famine"</h2>
+                        <span class="member-role">VPI</span>
+                    </div>
+                    <div class="member-desc-hidden">Sur une île déserte, il ne mourra pas de faim, donnez-lui 1 € et il vous fera le plus grand des festins. Mais faites attention, en dehors de la cuisine et du dessin, ne lui confiez pas votre destin, car c'est le premier à avoir coaché cette bande de chimpanzés.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="pole-title">Pôle Event</h2>
+        <div class="member-grid">
+            <div class="member-card">
+                <img src="images/trombi/JB.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Jean-Baptiste SCHENCKERY <br>"Le sauveur"</h2>
+                        <span class="member-role">Respo Event</span>
+                    </div>
+                    <div class="member-desc-hidden">À travers vents et marées, il a ramé pour obtenir ce poste siiiiiiiii convoité, pour guider l'équipe et prendre les responsabilités à la hauteur de sa personne.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Charlotte.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Charlotte NIVART<br> "Chaperlipopette"</h2>
+                        <span class="member-role">Respo ENSCL</span>
+                    </div>
+                    <div class="member-desc-hidden">Chimiste en herbe elle empêche Heiva de manger des feuilles, et en plus d'agiter les molécules elle réussit à faire bouger les singes que nous sommes.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Sylène.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Sylène TERRIER<br> "Lucky luck"</h2>
+                        <span class="member-role">Respo ITEEM</span>
+                    </div>
+                    <div class="member-desc-hidden">Aussi rapide que son ombre avec son outfit de cowgirl, elle vous met tous par terre en moins de 5 secondes .</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Thomas.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Thomas CASANOVA<br> "Eco-flic"</h2>
+                        <span class="member-role">Respo DD</span>
+                    </div>
+                    <div class="member-desc-hidden">Il surveille chacun de nos achats, traquant chaque gramme de CO2 émis, nous rappelle à chaque instant à quel point ce qu'il dit est important. Mais gare à sa générosité, car si vous l'exaspérez, d'Internet vous serez privés.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/PaulJF.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Paul JÉRÔME--FILIO<br> "Origamiste"</h2>
+                        <span class="member-role">Respo Origami</span>
+                    </div>
+                    <div class="member-desc-hidden">Par ses plis les plus précis, il s'est hissé au sommet. En France, vous ne trouverez pas de meilleur que lui en origami, et par les sept mers, seuls neuf le dépassent. Très peu fan de cuisine, il est disciple de Crous ou famine.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="pole-title">Pôle Logistique</h2>
+        <div class="member-grid">
+             <div class="member-card">
+                <img src="images/trombi/Mathys.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Mathys CORNUAUD <br>"Chat originel"</h2>
+                        <span class="member-role">Respo Log</span>
+                    </div>
+                    <div class="member-desc-hidden">いち、に、さん、ニャー、ありがとう～～</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Youri.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Youri PON--DROUET<br> "Tunnelier originel"</h2>
+                        <span class="member-role">Co-Respo Log</span>
+                    </div>
+                    <div class="member-desc-hidden">Après avoir découvert l'effet tunnel, il s'est découvert une nouvelle passion : tunneler les autres. S'il ne fait pas de la log, de la cuisine ou du Yu Gi Oh, vous pouvez être sûr qu'il y aura une victime de son flot intarissable de savoir.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Mathieu.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Mathieu ALLAYAUD<br> "Blanche neige & les 7 Mathieux"</h2>
+                        <span class="member-role">Respo Vaisselle</span>
+                    </div>
+                    <div class="member-desc-hidden">Il ne voulait pas que son prénom soit accordé, mais il n'avait pas vraiment le choix, sa taille n'est pas plus grande que celle d'un nain, mais elle n'est pas représentative de son cœur et son dévouement.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Karl.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Karl Altmeyer<br> "Yuri enjoyer"</h2>
+                        <span class="member-role">Vice-Trez</span>
+                    </div>
+                    <div class="member-desc-hidden">Il aurait pu partir à la recherche du trésor des Drakks avec sa soif pour l'argent mais il préfère trouver le One Piece ou d'autres choses plus douteuses... (attention les filles) Et lorsqu'il n'est pas à la barre, on le retrouve au bord d'une table à échanger quelques cartes avec ses comparses.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="pole-title">Pôle Démarchage</h2>
+        <div class="member-grid">
+            <div class="member-card">
+                <img src="images/trombi/William.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">William DUBOUT<br> "Respo léchouilles"</h2>
+                        <span class="member-role">Respo Dem</span>
+                    </div>
+                    <div class="member-desc-hidden">Pour un plaisir tactile infini, demandez-lui de vous lécher le coude. Pour un plaisir auditif infini, demandez-lui de vous chanter Bismillah. Pour un plaisir visuel infini, regardez sa jambe. Pour un plaisir olfactif infini, reniflez-le. Pour un plaisir gustatif infini, ne lui demandez SURTOUT PAS de cuisiner.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+            <div class="member-card">
+                <img src="images/trombi/Léonard.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Léonard GUEVEL <br>"Dormeur"</h2>
+                        <span class="member-role">Respo ...</span>
+                    </div>
+                    <div class="member-desc-hidden">Vous l'avez vu éveillé ? Nous non plus. Avachi en cours, s'endormant en amphi, mais toujours présent pour nous fatiguer avec son humour à dormir debout. Rêvant du Japon à longueur de journée, il est notre Sensei qui apporte son savoir à tous les membres du Drakkar.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="pole-title">Pôle Communication</h2>
+        <div class="member-grid">
+            <div class="member-card">
+                <img src="images/trombi/Gael.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Gaël BENNARDO<br> "Gaël Of All Time"</h2>
+                        <span class="member-role">Respo Comm</span>
+                    </div>
+                    <div class="member-desc-hidden">Des défauts, je n'en vois pas : il est à la fois capable de faire un storyboard, metteur en scène, mais aussi monteur, sans oublier animateur pour des effets spéciaux plus douteux les uns que les autres. Ah, si, son seul défaut : c'est une machine de guerre !</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Claire.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Claire BEVILACQUA<br> "PCD"</h2>
+                        <span class="member-role">Respo Goodies</span>
+                    </div>
+                    <div class="member-desc-hidden">Vous vous demandez sûrement ce que PCD veut dire, c'est normal : c'est le côté sombre de DVC, celui que vous ne connaîtrez jamais, un mélange qui vous fait peur. Si vous voulez trouver Claire, c'est dans l'aumônerie ou sur Tumblr.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+        
+            <div class="member-card">
+                <img src="images/trombi/Nina.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Nina BOYER<br> "Bonobo originelle"</h2>
+                        <span class="member-role">Respo Réseaux</span>
+                    </div>
+                    <div class="member-desc-hidden">Elle vous a subjugués aux Talents du Nord par ses performances exceptionnelles, elle a bravé vents et marées pour vous proposer une communication de qualité sur vos réseaux. Multi-chapeau, elle écrit des comptes rendus à faire pâlir le screz, avec sa créativité sans limite, elle rédige nos récits comme personne, inscrivant nos légendes dans les mers les plus reculées.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Hana.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Hana FUKUSHIMA<br> "Bad Girl"</h2>
+                        <span class="member-role">Respo Inter</span>
+                    </div>
+                    <div class="member-desc-hidden">Elle n'en a peut-être pas l'air comme ça, mais c'est la plus dangereuse d'entre nous, avec des balles volant à plus de 250 km/h, elle vous atomisera en moins de 5 secondes. On préfère se retrouver en face d'Elden le kraken que de se battre contre elle.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+
+            <div class="member-card">
+                <img src="images/trombi/Kanoko.jpg" class="member-photo">
+                <div class="member-content">
+                    <div>
+                        <h2 class="member-name">Kanoko SAKURAI<br> "Respo matcha"</h2>
+                        <span class="member-role">Respo Inter</span>
+                    </div>
+                    <div class="member-desc-hidden">Venue d'une contrée lointaine avec sa partenaire, elle nous a apporté des savoirs d'une mer inconnue. Elle maîtrise la confection du matcha comme personne, et elle en a subjugué plus d'un lors de la cérémonie du thé. Elle finit peut-être rouge après quelques gorgées de breuvages alcoolisés, mais elle tient toujours la barre pendant que certains sont étendus sur le pont.</div>
+                    <button class="desc-trigger">Clique pour lire la description</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-body">
+                <h2 class="modal-body-name" id="modalName">Nom</h2>
+                <span class="modal-body-role" id="modalRole">Rôle</span>
+                <p class="modal-body-desc" id="modalDesc">Description</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="viking-footer">
+        <div class="footer-container">
+            <div class="footer-box school-box">
+                <a href="https://centralelille.fr/" target="_blank" class="school-logo-link">
+                    <img src="images/logo-ecole-centrale-lille-2024.png" alt="Logo Centrale Lille" class="school-logo">
+                </a>                
+                <p>Centrale Lille Institut<br>Cité Scientifique<br>59651 Villeneuve d'Ascq</p>
+            </div>
+
+            <div class="footer-box social-box">
+                <h3>REJOIGNEZ LE RAID</h3>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/deer.8691241/" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                        deer.8691241
+                    </a>
+                    <a href="https://www.facebook.com/search/top?q=lomane%20danton" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                        </svg>
+                        Lomane Danton (Banane)
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2026 Drakk'Art - Liste BDA Centrale Lille. Tous droits réservés au Valhalla.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- SCROLL EFFECT ---
+        window.onscroll = function() {
+            const nav = document.getElementById('navbar');
+            if (window.pageYOffset > 50) {
+                nav.classList.add('shrunk');
+            } else {
+                nav.classList.remove('shrunk');
+            }
+        };
+
+        // --- MOBILE MENU LOGIC ---
+        const burger = document.getElementById('burger');
+        const navLinks = document.getElementById('nav-links');
+
+        burger.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+            burger.classList.toggle('toggle');
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('nav-active');
+                burger.classList.remove('toggle');
+            });
+        });
+
+        // --- GESTION DE LA MODALE ---
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const modalName = document.getElementById('modalName');
+        const modalRole = document.getElementById('modalRole');
+        const modalDesc = document.getElementById('modalDesc');
+        const body = document.body;
+
+        const triggers = document.querySelectorAll('.desc-trigger');
+
+        function openModal(card) {
+            const name = card.querySelector('.member-name').innerHTML;
+            const role = card.querySelector('.member-role').innerText;
+            const desc = card.querySelector('.member-desc-hidden').innerHTML;
+
+            modalName.innerHTML = name;
+            modalRole.innerText = role;
+            modalDesc.innerHTML = desc;
+
+            modalOverlay.classList.add('open');
+            body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('open');
+            body.classList.remove('modal-open');
+        }
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const card = this.closest('.member-card');
+                openModal(card);
+            });
+        });
+
+        modalClose.addEventListener('click', closeModal);
+
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

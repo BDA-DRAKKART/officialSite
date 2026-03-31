@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Les Clans - Drakk'Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --drakk-color: #986835;
+            --drakk-dark: #5e3b18;
+            --parchment: #fdfbf7;
+            --text-dark: #2d1b0e;
+            --gold: #ffd700;
+            --gold-dim: #c5a059;
+            --footer-bg: #2d1b0e;
+            --card-bg: #fffcf5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--parchment);
+            color: var(--text-dark);
+            font-family: 'Cinzel', serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* --- NAVBAR --- */
+        .viking-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 110px;
+            padding: 0 5%;
+            background: linear-gradient(180deg, #a6733c 0%, var(--drakk-color) 40%, var(--drakk-color) 100%);
+            border-bottom: 4px solid var(--drakk-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+
+        .viking-nav.shrunk { min-height: 70px; }
+
+        .nav-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1001;
+            flex-shrink: 1;
+        }
+
+        .main-logo {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+            transition: 0.4s ease;
+        }
+
+        .shrunk .main-logo { height: 45px; width: 45px; }
+
+        .nav-logo a {
+            color: white;
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-weight: 900;
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--drakk-dark);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            color: #fdfbf7;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            transition: 0.3s;
+        }
+
+        .nav-links li a:hover { color: var(--gold); }
+
+        .jv-btn {
+            background-color: var(--drakk-dark);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+        }
+
+        .burger {
+            display: none;
+            cursor: pointer;
+            z-index: 1001;
+            padding-left: 10px;
+        }
+
+        .burger div {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 5px;
+            transition: 0.3s;
+        }
+
+        /* --- HERO --- */
+        .hero {
+            text-align: center;
+            padding: 70px 20px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(152,104,53,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-rune {
+            font-size: 1.1rem;
+            color: var(--drakk-color);
+            letter-spacing: 14px;
+            opacity: 0.6;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 8vw, 4.5rem);
+            color: var(--drakk-dark);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            display: inline-block;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .hero h1::before,
+        .hero h1::after {
+            content: '';
+            display: block;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--drakk-color), transparent);
+            margin: 12px auto;
+        }
+
+        .hero p {
+            font-size: clamp(0.9rem, 2.5vw, 1.15rem);
+            max-width: 650px;
+            margin: 0 auto;
+            color: var(--drakk-color);
+            font-family: Georgia, serif;
+            font-style: italic;
+        }
+
+        .hero-count {
+            display: inline-block;
+            margin-top: 30px;
+            background: var(--drakk-dark);
+            color: var(--gold);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--gold-dim);
+        }
+
+        /* --- SECTION CLANS --- */
+        .clans-section {
+            padding: 60px 4% 80px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .clans-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .clans-intro h2 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: var(--drakk-color);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+        }
+
+        .rune-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            justify-content: center;
+            color: var(--drakk-color);
+            opacity: 0.5;
+            font-size: 0.9rem;
+            letter-spacing: 8px;
+        }
+
+        .rune-bar::before, .rune-bar::after {
+            content: '';
+            flex: 1;
+            max-width: 120px;
+            height: 1px;
+        }
+        .rune-bar::before { background: linear-gradient(to right, transparent, var(--drakk-color)); }
+        .rune-bar::after  { background: linear-gradient(to left,  transparent, var(--drakk-color)); }
+
+        /* --- GRILLE --- */
+        .clans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        /* --- CARTE CLAN --- */
+        .clan-card {
+            background: var(--card-bg);
+            border-radius: 14px;
+            border: 1px solid rgba(152, 104, 53, 0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            position: relative;
+            opacity: 0;
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        .clan-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 45px rgba(94,59,24,0.18);
+        }
+
+        .clan-card::before {
+            content: '';
+            display: block;
+            height: 4px;
+            background: linear-gradient(to right, var(--drakk-color), var(--gold), var(--drakk-color));
+            width: 0;
+            transition: width 0.4s ease;
+        }
+
+        .clan-card:hover::before { width: 100%; }
+
+        /* Délais */
+        .clan-card:nth-child(1)  { animation-delay: 0.05s; }
+        .clan-card:nth-child(2)  { animation-delay: 0.10s; }
+        .clan-card:nth-child(3)  { animation-delay: 0.15s; }
+        .clan-card:nth-child(4)  { animation-delay: 0.20s; }
+        .clan-card:nth-child(5)  { animation-delay: 0.25s; }
+        .clan-card:nth-child(6)  { animation-delay: 0.30s; }
+        .clan-card:nth-child(7)  { animation-delay: 0.35s; }
+        .clan-card:nth-child(8)  { animation-delay: 0.40s; }
+        .clan-card:nth-child(9)  { animation-delay: 0.45s; }
+        .clan-card:nth-child(10) { animation-delay: 0.50s; }
+        .clan-card:nth-child(11) { animation-delay: 0.55s; }
+        .clan-card:nth-child(12) { animation-delay: 0.60s; }
+        .clan-card:nth-child(13) { animation-delay: 0.65s; }
+        .clan-card:nth-child(14) { animation-delay: 0.70s; }
+
+        /* --- EN-TÊTE CARTE --- */
+        .clan-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 22px 22px 16px;
+            border-bottom: 1px solid rgba(152,104,53,0.12);
+        }
+
+        .clan-logo-wrap {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 3px solid rgba(152,104,53,0.3);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f0ead8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s;
+        }
+
+        .clan-card:hover .clan-logo-wrap { border-color: var(--gold-dim); }
+
+        .clan-logo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .clan-initial {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--drakk-color);
+            line-height: 1;
+            display: none;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clan-title-block { flex: 1; min-width: 0; }
+
+        .clan-name {
+            font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+            font-weight: 900;
+            color: var(--drakk-dark);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            line-height: 1.2;
+        }
+
+        .clan-tag {
+            display: inline-block;
+            margin-top: 5px;
+            font-size: 0.65rem;
+            background: rgba(152,104,53,0.1);
+            color: var(--drakk-color);
+            padding: 2px 8px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: Georgia, serif;
+            font-style: italic;
+        }
+
+        /* --- PHOTO MEMBRES --- */
+        .clan-photo-wrap {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .clan-photo-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 50px;
+            background: linear-gradient(to bottom, transparent, var(--card-bg));
+            pointer-events: none;
+        }
+
+        .clan-photo {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+            filter: sepia(10%) contrast(1.02);
+            transition: filter 0.4s ease, transform 0.5s ease;
+        }
+
+        .clan-card:hover .clan-photo {
+            filter: sepia(0%) contrast(1.05);
+            transform: scale(1.04);
+        }
+
+        /* --- BODY --- */
+        .clan-body {
+            padding: 18px 22px 22px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .clan-desc {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 0.85rem;
+            color: #5a3e28;
+            line-height: 1.75;
+            font-style: italic;
+            flex: 1;
+        }
+
+        .clan-rune-divider {
+            text-align: center;
+            color: var(--drakk-color);
+            opacity: 0.35;
+            font-size: 0.7rem;
+            letter-spacing: 6px;
+        }
+
+        .clan-corner {
+            position: absolute;
+            bottom: 14px;
+            right: 16px;
+            font-size: 1.1rem;
+            color: var(--drakk-color);
+            opacity: 0.18;
+            transition: opacity 0.3s;
+        }
+
+        .clan-card:hover .clan-corner { opacity: 0.5; }
+
+        /* --- FOOTER --- */
+        .viking-footer {
+            background-color: var(--footer-bg);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill-rule="evenodd"><g fill="%233e2714" fill-opacity="0.2"><path d="M0 40h10V30H0v10zm10-10h10V20H10v10zm10-10h10V10H20v10zm10-10h10V0H30v10zM0 30h10V20H0v10zm10-10h10V10H10v10zm10-10h10V0H20v10zM0 20h10V10H0v10zm10-10h10V0H10v10zM0 10h10V0H0v10z"/></g></g></svg>'),
+                             linear-gradient(180deg, var(--drakk-dark) 0%, var(--footer-bg) 100%);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 80px 5% 30px 5%;
+            border-top: 8px solid;
+            border-image: linear-gradient(to right, #8e6e46, var(--gold), #a6733c, var(--gold), #8e6e46) 1;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .viking-footer::before {
+            content: 'ᛦ D ᛦ';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--drakk-dark);
+            color: var(--gold);
+            padding: 0 15px;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            border-radius: 5px;
+            border: 2px solid var(--gold);
+            z-index: 1;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 40px;
+        }
+
+        .footer-box { flex: 1; }
+        .school-box { text-align: left; }
+
+        .school-logo-link {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        .school-logo-link:hover { transform: scale(1.05); }
+
+        .school-logo {
+            height: 70px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .school-box p {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .social-box { text-align: right; }
+
+        .social-box h3 {
+            color: var(--gold);
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            display: inline-block;
+        }
+
+        .social-box h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px; right: 0;
+            width: 60px; height: 2px;
+            background: var(--gold);
+        }
+
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .social-link:hover { color: var(--gold); transform: translateX(-5px); }
+
+        .social-icon {
+            width: 24px; height: 24px;
+            margin-right: 12px;
+            fill: var(--gold-dim);
+            transition: fill 0.3s ease, filter 0.3s ease;
+        }
+
+        .social-link:hover .social-icon {
+            fill: var(--gold);
+            filter: drop-shadow(0 0 5px rgba(255,215,0,0.5));
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
+            font-family: 'Arial', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media screen and (max-width: 1100px) {
+            .clans-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        }
+
+        @media screen and (max-width: 980px) {
+
+            /* ── Navbar ── */
+            .viking-nav {
+                min-height: 75px;
+                padding: 0 20px;
+            }
+
+            .main-logo { height: 55px; width: 55px; }
+            .shrunk .main-logo { height: 40px; width: 40px; }
+            .nav-logo a { font-size: 1.1rem; }
+
+            .nav-links {
+                position: fixed;
+                right: 0;
+                top: 0;
+                height: 100vh;
+                width: 75%;
+                max-width: 320px;
+                background: linear-gradient(160deg, var(--drakk-dark) 0%, #1a0e06 100%);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                gap: 8px;
+                box-shadow: -8px 0 30px rgba(0,0,0,0.6);
+                z-index: 2000;
+                padding: 20px;
+            }
+
+            .nav-links li { width: 100%; text-align: center; }
+
+            .nav-links li a {
+                display: block;
+                font-size: 1rem;
+                padding: 14px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                letter-spacing: 1.5px;
+            }
+
+            .nav-links li:last-child a { border-bottom: none; }
+
+            .jv-btn {
+                margin-top: 12px;
+                border-radius: 6px;
+                border-width: 2px;
+            }
+
+            .burger { display: block; z-index: 2001; }
+            .nav-active { transform: translateX(0%); }
+
+            /* ── Hero ── */
+            .hero {
+                padding: 50px 20px 40px;
+            }
+
+            /* ── Grille clans ── */
+            .clans-grid { gap: 20px; }
+            .clans-section { padding: 40px 4% 60px; }
+
+            /* ── Footer ── */
+            .viking-footer { padding: 70px 20px 25px; }
+
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 40px;
+            }
+
+            .school-box { text-align: center; }
+            .social-box { text-align: center; }
+            .social-links { align-items: center; }
+            .social-box h3::after { left: 50%; transform: translateX(-50%); right: auto; }
+        }
+
+        @media screen and (max-width: 640px) {
+            .clans-grid { grid-template-columns: 1fr; gap: 20px; }
+        }
+
+        @media screen and (max-width: 480px) {
+            .viking-nav { min-height: 65px; padding: 0 14px; }
+            .main-logo { height: 46px; width: 46px; }
+            .nav-logo a { font-size: 1rem; }
+            .nav-links { width: 85%; }
+        }
+
+        .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
+        .toggle .line2 { opacity: 0; }
+        .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="viking-nav" id="navbar">
+        <div class="nav-logo-container">
+            <img src="images/LogoDrakkartRaster.png" alt="Logo" class="main-logo">
+            <div class="nav-logo">
+                <a href="index.html">DRAKK'ART</a>
+            </div>
+        </div>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html">Le Village</a></li>
+            <li><a href="famille.html">La Famille</a></li>
+            <li><a href="saga.html">La Saga</a></li>
+            <li><a href="forge.html">La Forge</a></li>
+            <li><a href="clans.html" style="color: var(--gold);">Les Clans</a></li>
+            <li><a href="conquete.html" class="jv-btn">La Conquête</a></li>
+        </ul>
+
+        <div class="burger" id="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <span class="hero-rune">⚔ ᛟ ⚔</span>
+        <h1>Les Clans des Drakks</h1>
+        <p>Découvrez toutes les associations gouvernées par nos artistes préférés !</p>
+        <span class="hero-count">16 Clans alliés</span>
+    </section>
+
+    <!-- GRILLE -->
+    <section class="clans-section">
+        <div class="clans-intro">
+            <h2>Nos associations alliées</h2>
+            <div class="rune-bar">ᚢ ᚾ ᛁ ᛏ ᚤ</div>
+        </div>
+
+        <div class="clans-grid">
+
+            <!-- 1. Rézoléo -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/rezoleo.png" alt="Logo Rézoléo">
+                        <span class="clan-initial">R</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Rézoléo</div>
+                        <span class="clan-tag">Réseau de la rez</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/rezaleo_photo.jpg" alt="Membres Rézoléo" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᚱ</span>
+            </div>
+
+            <!-- 2. Éclosion -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/eclosion.png" alt="Logo Éclosion">
+                        <span class="clan-initial">É</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Éclosion</div>
+                        <span class="clan-tag">Fruits & Légumes frais</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/eclosion_photo.jpg" alt="Membres Éclosion" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛖ</span>
+            </div>
+
+            <!-- 3. Centrale Cuisine -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/CC.png" alt="Logo Centrale Cuisine">
+                        <span class="clan-initial">C</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Centrale Cuisine</div>
+                        <span class="clan-tag">Miam miam</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/cuisine_photo.jpg" alt="Membres Centrale Cuisine" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner"></span>
+            </div>
+
+            <!-- 4. Centrale Culture Chinoise -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/CCC.png" alt="Logo Centrale Culture Chinoise">
+                        <span class="clan-initial">三</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Centrale Culture Chinoise</div>
+                        <span class="clan-tag">Culture & Miam miam</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/3c_photo.jpg" alt="Membres Centrale Culture Chinoise" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᚹ</span>
+            </div>
+
+            <!-- 5. Centrale Magie -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/magie.png" alt="Logo Centrale Magie">
+                        <span class="clan-initial">✦</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Centrale Magie</div>
+                        <span class="clan-tag">Wow</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/magie_photo.jpg" alt="Membres Centrale Magie" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛗ</span>
+            </div>
+
+            <!-- 6. Knit and Chill -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/knit&chill.png" alt="Logo Knit and Chill">
+                        <span class="clan-initial">K</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Knit and Chill</div>
+                        <span class="clan-tag">Trop bô</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/knit_photo.jpg" alt="Membres Knit and Chill" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᚲ</span>
+            </div>
+
+            <!-- 7. Da Vinci Club -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/DVC.png" alt="Logo Da Vinci Club">
+                        <span class="clan-initial">Dv</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Da Vinci Club</div>
+                        <span class="clan-tag">Art & Dessin</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/davinci_photo.jpg" alt="Membres Da Vinci Club" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛞ</span>
+            </div>
+
+            <!-- 8. Club Littérature -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/litte.png" alt="Logo Club Littérature">
+                        <span class="clan-initial">L</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Club Littérature</div>
+                        <span class="clan-tag">Lecture & Écriture</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/litterature_photo.jpg" alt="Membres Club Littérature" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛚ</span>
+            </div>
+
+            <!-- 9. Impulsion -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/impulsion.png" alt="Logo Impulsion">
+                        <span class="clan-initial">I</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Impulsion</div>
+                        <span class="clan-tag">Inclusion</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/impulsion_photo.jpg" alt="Membres Impulsion" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛁ</span>
+            </div>
+
+            <!-- 10. Bio'School -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/Bio_s Cool.PNG" alt="Logo Bio'School">
+                        <span class="clan-initial">B</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Bio'School</div>
+                        <span class="clan-tag">Écologie</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/bioschool_photo.jpg" alt="Membres Bio'School" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛒ</span>
+            </div>
+
+            <!-- 11. Plug'In -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/plugin.png" alt="Logo Plug'In">
+                        <span class="clan-initial">P</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Plug'In</div>
+                        <span class="clan-tag">Musique</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/plugin_photo.jpg" alt="Membres Plug'In" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛈ</span>
+            </div>
+
+            <!-- 12. Aumônerie -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/aumo.png" alt="Logo Aumônerie">
+                        <span class="clan-initial">✝</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Aumônerie</div>
+                        <span class="clan-tag">Spiritualité</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/aumonerie_photo.jpg" alt="Membres Aumônerie" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᚨ</span>
+            </div>
+
+            <!-- 13. CAG -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/cag.png" alt="Logo CAG">
+                        <span class="clan-initial" style="font-size:0.9rem;">CAG</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Centr'All Games</div>
+                        <span class="clan-tag">Jeux de société</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/cag_photo.jpg" alt="Membres CAG" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᚷ</span>
+            </div>
+
+            <!-- 14. Okae -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/Okae_Lille.png" alt="Logo Okae">
+                        <span class="clan-initial">O</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Okae'Lille</div>
+                        <span class="clan-tag">Culture & Animé</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/okae_photo.jpg" alt="Membres Okae" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                    </p>
+                </div>
+                <span class="clan-corner">ᛟ</span>
+            </div>
+
+            <!-- 15. CD -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/okae_logo.png" alt="Logo Okae">
+                        <span class="clan-initial">C</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Centrale Dégénéré</div>
+                        <span class="clan-tag">La Dégénérescence</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/okae_photo.jpg" alt="Membres Okae" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                        Les fous
+                    </p>
+                </div>
+                <span class="clan-corner">ᛟ</span>
+            </div>
+
+            <!-- 14. CD -->
+            <div class="clan-card">
+                <div class="clan-header">
+                    <div class="clan-logo-wrap">
+                        <img src="images/clans/Logos assos/motdit.png" alt="Logo Okae">
+                        <span class="clan-initial">C</span>
+                    </div>
+                    <div class="clan-title-block">
+                        <div class="clan-name">Les Mots Dits</div>
+                        <span class="clan-tag">Théâtre</span>
+                    </div>
+                </div>
+                <div class="clan-photo-wrap">
+                    <img src="images/clans/okae_photo.jpg" alt="Membres Okae" class="clan-photo">
+                </div>
+                <div class="clan-body">
+                    <div class="clan-rune-divider">— ᛟ —</div>
+                    <p class="clan-desc">
+                        Les fous
+                    </p>
+                </div>
+                <span class="clan-corner">ᛟ</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="viking-footer">
+        <div class="footer-container">
+            <div class="footer-box school-box">
+                <a href="https://centralelille.fr/" target="_blank" class="school-logo-link">
+                    <img src="images/logo-ecole-centrale-lille-2024.png" alt="Logo Centrale Lille" class="school-logo">
+                </a>
+                <p>Centrale Lille Institut<br>Cité Scientifique<br>59651 Villeneuve d'Ascq</p>
+            </div>
+
+            <div class="footer-box social-box">
+                <h3>REJOIGNEZ LE RAID</h3>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/deer.8691241/" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                        deer.8691241
+                    </a>
+                    <a href="https://www.facebook.com/search/top?q=lomane%20danton" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                        </svg>
+                        Lomane Danton (Banane)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Drakk'Art - Liste BDA Centrale Lille. Tous droits réservés au Valhalla.</p>
+        </div>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            document.getElementById('navbar').classList.toggle('shrunk', window.pageYOffset > 50);
+        };
+
+        const burger = document.getElementById('burger');
+        const navLinks = document.getElementById('nav-links');
+
+        burger.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+            burger.classList.toggle('toggle');
+            document.body.style.overflow = navLinks.classList.contains('nav-active') ? 'hidden' : '';
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('nav-active');
+                burger.classList.remove('toggle');
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Fallback logo -> afficher l'initiale si image absente
+        document.querySelectorAll('.clan-logo-wrap').forEach(wrap => {
+            const img = wrap.querySelector('img');
+            const initial = wrap.querySelector('.clan-initial');
+            if (!img || !initial) return;
+            img.addEventListener('error', () => {
+                img.style.display = 'none';
+                initial.style.display = 'flex';
+            });
+        });
+
+        // Fallback photo membres -> fond uni si image absente
+        document.querySelectorAll('.clan-photo').forEach(img => {
+            img.addEventListener('error', () => {
+                img.style.display = 'none';
+                const wrap = img.closest('.clan-photo-wrap');
+                if (wrap) {
+                    wrap.style.minHeight = '80px';
+                    wrap.style.background = 'linear-gradient(135deg, #f0ead8, #e8ddc8)';
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drakk'Art - La Forge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* Nouveaux boutons cachés par défaut sur Desktop */
+        .floating-filter-btn, .close-filter-btn {
+            display: none;
+        }
+        /* --- VARIABLES ET RESET --- */
+        :root {
+            --drakk-color: #986835;
+            --drakk-dark: #5e3b18;
+            --parchment: #fdfbf7;
+            --text-dark: #2d1b0e;
+            --gold: #ffd700;
+            --gold-dim: #c5a059;
+            --footer-bg: #2d1b0e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--parchment);
+            color: var(--text-dark);
+            font-family: 'Cinzel', serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* ===================== NAVBAR ===================== */
+        .viking-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 110px;
+            padding: 0 5%;
+            background: linear-gradient(180deg, #a6733c 0%, var(--drakk-color) 40%, var(--drakk-color) 100%);
+            border-bottom: 4px solid var(--drakk-dark);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.4s ease;
+        }
+
+        .viking-nav.shrunk { min-height: 70px; }
+
+        .nav-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1001;
+            flex-shrink: 1;
+        }
+
+        .main-logo {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+            transition: 0.4s ease;
+        }
+
+        .shrunk .main-logo { height: 45px; width: 45px; }
+
+        .nav-logo a {
+            color: white;
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-weight: 900;
+            font-size: clamp(1.1rem, 4vw, 1.8rem);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px var(--drakk-dark);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+        }
+
+        .nav-links li a {
+            color: #fdfbf7;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            transition: 0.3s;
+        }
+
+        .nav-links li a:hover { color: var(--gold); }
+
+        .jv-btn {
+            background-color: var(--drakk-dark);
+            border: 1px solid var(--gold);
+            border-radius: 4px;
+        }
+
+        .burger {
+            display: none;
+            cursor: pointer;
+            z-index: 1001;
+            padding-left: 10px;
+        }
+
+        .burger div {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            margin: 5px;
+            transition: 0.3s;
+        }
+
+        /* ===================== HERO ===================== */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 10vw, 4rem);
+            color: var(--drakk-color);
+            margin-bottom: 20px;
+            border-top: 3px solid var(--drakk-color);
+            border-bottom: 3px solid var(--drakk-color);
+            padding: 10px 20px;
+            width: fit-content;
+            max-width: 95%;
+        }
+
+        .hero p {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            max-width: 80%;
+        }
+
+        /* ===================== FILTRES ===================== */
+        .filters-section {
+            padding: 30px 5% 10px;
+            background: var(--parchment);
+            position: sticky;
+            top: 70px; /* colle sous la navbar shrunk */
+            z-index: 900;
+            border-bottom: 2px solid rgba(152, 104, 53, 0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        .filters-label {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--drakk-dark);
+            opacity: 0.6;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-bottom: 16px;
+        }
+
+        .filter-btn {
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 7px 16px;
+            border: 2px solid var(--drakk-color);
+            border-radius: 30px;
+            background: transparent;
+            color: var(--drakk-color);
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--drakk-color);
+            color: white;
+        }
+
+        /* ===================== GALERIE MASONRY ===================== */
+        .gallery-section {
+            padding: 30px 5% 70px;
+        }
+
+        /* Compteur de résultats */
+        .gallery-count {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: var(--drakk-dark);
+            opacity: 0.5;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        /* Masonry CSS columns */
+        .masonry-grid {
+            column-count: 4;
+            column-gap: 14px;
+        }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 14px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #e8ddd0;
+            /* Animation d'apparition */
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .masonry-item.hidden {
+            display: none;
+        }
+
+        .masonry-item img {
+            width: 100%;
+            display: block;
+            transition: transform 0.5s ease, filter 0.4s ease;
+            filter: brightness(1);
+        }
+
+        /* Overlay au hover */
+        .masonry-item:hover img {
+            transform: scale(1.06);
+            filter: brightness(0.55);
+        }
+
+        .item-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 14px 14px 12px;
+            background: linear-gradient(transparent, rgba(30,14,4,0.85));
+            transform: translateY(100%);
+            transition: transform 0.35s ease;
+            pointer-events: none;
+        }
+
+        .masonry-item:hover .item-overlay {
+            transform: translateY(0);
+        }
+
+        .item-event {
+            font-size: 0.68rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .item-author {
+            font-size: 0.82rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* ===================== LIGHTBOX ===================== */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 5, 2, 0.93);
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .lightbox-inner {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox-inner img {
+            max-width: 90vw;
+            max-height: 78vh;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+
+        .lightbox-info {
+            margin-top: 18px;
+            text-align: center;
+        }
+
+        .lightbox-event {
+            font-size: 0.72rem;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .lightbox-author {
+            font-size: 1rem;
+            color: white;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Bouton fermer */
+        .lightbox-close {
+            position: absolute;
+            top: -44px;
+            right: 0;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 2rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .lightbox-close:hover { color: white; }
+
+        /* Flèches navigation */
+        .lightbox-prev,
+        .lightbox-next {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 16px 20px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            z-index: 9001;
+        }
+
+        .lightbox-prev { left: 16px; }
+        .lightbox-next { right: 16px; }
+
+        .lightbox-prev:hover,
+        .lightbox-next:hover { background: rgba(255,255,255,0.18); }
+
+        /* ===================== FOOTER ===================== */
+        .viking-footer {
+            background-color: var(--footer-bg);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill-rule="evenodd"><g fill="%233e2714" fill-opacity="0.2"><path d="M0 40h10V30H0v10zm10-10h10V20H10v10zm10-10h10V10H20v10zm10-10h10V0H30v10zM0 30h10V20H0v10zm10-10h10V10H10v10zm10-10h10V0H20v10zM0 20h10V10H0v10zm10-10h10V0H10v10zM0 10h10V0H0v10z"/></g></g></svg>'),
+                             linear-gradient(180deg, var(--drakk-dark) 0%, var(--footer-bg) 100%);
+            color: rgba(255,255,255,0.8);
+            padding: 80px 5% 30px 5%;
+            border-top: 8px solid;
+            border-image: linear-gradient(to right, #8e6e46, var(--gold), #a6733c, var(--gold), #8e6e46) 1;
+            box-shadow: 0 -10px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .viking-footer::before {
+            content: 'ᛦ D ᛦ';
+            position: absolute;
+            top: -16px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--drakk-dark);
+            color: var(--gold);
+            padding: 0 15px;
+            font-family: 'Cinzel', serif;
+            font-weight: 900;
+            border-radius: 5px;
+            border: 2px solid var(--gold);
+            z-index: 1;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 40px;
+        }
+
+        .footer-box { flex: 1; }
+        .school-box { text-align: left; }
+
+        .school-logo-link { display: inline-block; transition: transform 0.3s ease; }
+        .school-logo-link:hover { transform: scale(1.05); }
+
+        .school-logo { height: 70px; margin-bottom: 15px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+        .school-box p { font-family: 'Arial', sans-serif; font-size: 0.9rem; line-height: 1.5; color: rgba(255,255,255,0.7); }
+
+        .social-box { text-align: right; }
+
+        .social-box h3 {
+            color: var(--gold); font-size: 1.4rem; margin-bottom: 25px;
+            text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: relative; display: inline-block;
+        }
+
+        .social-box h3::after {
+            content: ''; position: absolute;
+            bottom: -8px; right: 0;
+            width: 60px; height: 2px;
+            background: var(--gold);
+        }
+
+        .social-links { display: flex; flex-direction: column; gap: 15px; align-items: flex-end; }
+
+        .social-link {
+            display: flex; align-items: center;
+            color: white; text-decoration: none;
+            font-family: 'Arial', sans-serif; font-size: 0.95rem;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .social-link:hover { color: var(--gold); transform: translateX(-5px); }
+
+        .social-icon { width: 24px; height: 24px; margin-right: 12px; fill: var(--gold-dim); transition: fill 0.3s ease, filter 0.3s ease; }
+        .social-link:hover .social-icon { fill: var(--gold); filter: drop-shadow(0 0 5px rgba(255,215,0,0.5)); }
+
+        .footer-bottom {
+            text-align: center; margin-top: 60px; font-size: 0.8rem; opacity: 0.5;
+            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px;
+            font-family: 'Arial', sans-serif; letter-spacing: 1px;
+        }
+
+        /* ===== VIDEO & AUDIO ITEMS ===== */
+        .item-media-video {
+            width: 100%;
+            display: block;
+            background: #111;
+        }
+
+        .item-play-icon {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            color: rgba(255,255,255,0.85);
+            background: rgba(0,0,0,0.45);
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
+            transition: background 0.25s, transform 0.25s;
+        }
+
+        .masonry-item:hover .item-play-icon {
+            background: rgba(152,104,53,0.85);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .item-audio-card {
+            width: 100%;
+            min-height: 140px;
+            background: linear-gradient(135deg, var(--drakk-dark) 0%, #1a0e06 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .item-audio-icon {
+            font-size: 2.5rem;
+            color: var(--gold);
+            animation: audioFloat 2.5s ease-in-out infinite;
+        }
+
+        @keyframes audioFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .item-audio-title {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+        }
+
+        /* ===== LIGHTBOX MEDIA ===== */
+        #lb-video {
+            max-width: 90vw;
+            max-height: 70vh;
+            border-radius: 4px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            display: none;
+        }
+
+        .lb-audio-wrapper {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 40px 20px;
+        }
+
+        .lb-audio-wrapper .lb-audio-icon {
+            font-size: 5rem;
+            color: var(--gold);
+            animation: audioFloat 2.5s ease-in-out infinite;
+        }
+
+        .lb-audio-wrapper .lb-audio-title {
+            font-size: 1.1rem;
+            color: white;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        #lb-audio {
+            width: min(420px, 80vw);
+            margin-top: 10px;
+            accent-color: var(--gold);
+        }
+
+        /* ===== FILTRES MOBILE : BOUTON TOGGLE ===== */
+        .filter-toggle-btn {
+            display: none;
+        }
+
+        .filters-backdrop {
+            display: none;
+        }
+
+        /* ===================== MEDIA QUERIES ===================== */
+
+        /* — 3 colonnes — */
+        @media screen and (max-width: 1100px) {
+            .masonry-grid { column-count: 3; }
+        }
+
+        /* ─────────────────────────────────────────────
+           TABLETTE & MOBILE  (≤ 980px)
+        ───────────────────────────────────────────── */
+        @media screen and (max-width: 980px) {
+
+            /* ── Navbar ── */
+            .viking-nav { min-height: 75px; padding: 0 20px; }
+            .main-logo { height: 55px; width: 55px; }
+            .shrunk .main-logo { height: 40px; width: 40px; }
+            .nav-logo a { font-size: 1.1rem; }
+
+            .nav-links {
+                position: fixed; right: 0; top: 0;
+                height: 100vh; width: 75%; max-width: 320px;
+                background: linear-gradient(160deg, var(--drakk-dark) 0%, #1a0e06 100%);
+                flex-direction: column; justify-content: center; align-items: center;
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                gap: 8px; box-shadow: -8px 0 30px rgba(0,0,0,0.6);
+                z-index: 2000; padding: 20px;
+            }
+            .nav-links li { width: 100%; text-align: center; }
+            .nav-links li a {
+                display: block; font-size: 1rem; padding: 14px 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                letter-spacing: 1.5px; color: #fdfbf7;
+            }
+            .nav-links li:last-child a { border-bottom: none; }
+            .jv-btn { margin-top: 12px; border-radius: 6px; border-width: 2px; }
+            .burger { display: block; z-index: 2001; }
+            .nav-active { transform: translateX(0%); }
+
+            /* ── Hero ── */
+            .hero {
+                padding: 32px 20px 22px;
+            }
+            .hero h1 {
+                font-size: clamp(1.4rem, 6.5vw, 2.2rem);
+                padding: 8px 18px;
+            }
+            .hero p {
+                max-width: 100%;
+                font-size: clamp(0.85rem, 2.6vw, 1rem);
+                line-height: 1.7;
+            }
+
+            /* ── Bouton flottant (Mobile) ── */
+            .floating-filter-btn {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                position: fixed;
+                top: 85px; /* Juste en dessous de la navbar */
+                right: 15px;
+                z-index: 800;
+                font-family: 'Cinzel', serif;
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                padding: 7px 12px;
+                border: 2px solid var(--drakk-color);
+                border-radius: 20px;
+                background: rgba(253,251,247,0.9);
+                color: var(--drakk-color);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+                cursor: pointer;
+                backdrop-filter: blur(4px);
+                transition: background 0.2s, color 0.2s;
+            }
+
+            .floating-filter-btn:active {
+                background: var(--drakk-color);
+                color: white;
+            }
+
+            /* ── Disparition de l'ancienne barre ── */
+            .filters-section {
+                position: static;
+                padding: 0;
+                border: none;
+                background: transparent;
+                backdrop-filter: none;
+            }
+            .filters-label, .filter-active-label, .filter-toggle-btn { 
+                display: none !important; 
+            }
+
+            /* ── Panneau des filtres (Popup modale centrée) ── */
+            .filters-row {
+                position: fixed;
+                top: 50%; 
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.9);
+                background: var(--parchment);
+                border: 2px solid var(--drakk-color);
+                border-radius: 12px;
+                z-index: 9500;
+                padding: 35px 12px 15px; /* Espace en haut pour la croix */
+                width: 90%;
+                max-width: 360px;
+                max-height: 75vh;
+                overflow-y: auto;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 6px;
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* Ombre douce à la place de l'assombrissement */
+            }
+
+            .filters-row.drawer-open { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+                pointer-events: all;
+            }
+
+            /* On retire les anciens styles du "drawer" du bas */
+            .filters-row::before, .filters-row::after { display: none !important; }
+
+            /* ── Boutons à l'intérieur du filtre (plus petits et agencés) ── */
+            .filter-btn {
+                font-size: 0.62rem; /* Texte beaucoup plus petit */
+                padding: 6px 10px;
+                flex: 1 1 30%; /* S'étale intelligemment en grille */
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* ── Bouton Croix ── */
+            .close-filter-btn {
+                display: block;
+                position: absolute;
+                top: 6px;
+                right: 10px;
+                background: none;
+                border: none;
+                font-size: 1.2rem;
+                color: var(--drakk-dark);
+                cursor: pointer;
+                font-family: sans-serif;
+                padding: 5px;
+            }
+
+            /* ── Backdrop (Assombrissement retiré) ── */
+            .filters-backdrop {
+                display: block;
+                position: fixed; inset: 0;
+                background: transparent; /* <-- Assombrissement supprimé ici */
+                z-index: 9400;
+                opacity: 0;
+                pointer-events: none;
+            }
+            .filters-backdrop.visible { opacity: 1; pointer-events: all; }
+
+            /* ── Galerie ── */
+            .gallery-section { padding: 16px 10px 70px; }
+            .gallery-count { font-size: 0.72rem; margin-bottom: 14px; }
+            .masonry-grid { column-count: 2; column-gap: 8px; }
+            .masonry-item { margin-bottom: 8px; border-radius: 8px; }
+
+            /* --- CORRECTION GALERIE MOBILE --- */
+            /* 1. On remet l'image en pleine lumière par défaut */
+            .masonry-item img {
+                filter: brightness(1) !important;
+                transition: none;
+            }
+            
+            /* 2. On bloque les zooms et assombrissements "fantômes" lors du scroll tactile */
+            .masonry-item:hover img,
+            .masonry-item:active img {
+                transform: none !important;
+                filter: brightness(1) !important;
+            }
+
+            /* 3. On réduit la zone sombre pour qu'elle ne couvre QUE le texte en bas */
+            .item-overlay {
+                transform: translateY(0) !important;
+                /* Le dégradé part du bas et devient transparent après 50px de hauteur */
+                background: linear-gradient(to top, rgba(20, 10, 5, 0.95) 0%, transparent 50px) !important;
+                padding: 6px 8px 4px !important;
+            }
+
+            /* 4. Fix de l'icône vidéo pour qu'elle reste bien centrée sans bug tactile */
+            .masonry-item:hover .item-play-icon,
+            .masonry-item:active .item-play-icon {
+                transform: translate(-50%, -50%) !important;
+                background: rgba(0,0,0,0.45) !important;
+            }
+
+            /* ── Lightbox ── */
+            .lightbox-inner {
+                max-width: 100vw;
+                max-height: 100vh;
+                padding: 0 10px;
+            }
+            .lightbox-inner img,
+            #lb-video {
+                max-width: 96vw;
+                max-height: 55vh;
+                border-radius: 6px;
+            }
+            .lightbox-info { margin-top: 14px; padding: 0 10px; }
+            .lightbox-event { font-size: 0.68rem; letter-spacing: 2px; }
+            .lightbox-author { font-size: 0.95rem; }
+
+            .lightbox-close {
+                top: -48px;
+                right: 0;
+                font-size: 1.6rem;
+                width: 44px; height: 44px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            /* Flèches : cibles tactiles généreuses */
+            .lightbox-prev,
+            .lightbox-next {
+                position: fixed;
+                top: 50%;
+                transform: translateY(-50%);
+                padding: 22px 14px;
+                font-size: 1.5rem;
+                border-radius: 6px;
+                background: rgba(255,255,255,0.1);
+                min-height: 64px;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .lightbox-prev { left: 6px; }
+            .lightbox-next { right: 6px; }
+
+            /* ── Footer ── */
+            .viking-footer { padding: 60px 20px 25px; }
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 40px;
+            }
+            .school-box { text-align: center; }
+            .social-box { text-align: center; }
+            .social-links { align-items: center; }
+            .social-box h3::after { left: 50%; transform: translateX(-50%); right: auto; }
+        }
+
+        /* ─────────────────────────────────────────────
+           MOBILE  (≤ 600px)
+        ───────────────────────────────────────────── */
+        @media screen and (max-width: 600px) {
+            .hero { padding: 26px 16px 18px; }
+            .hero h1 {
+                font-size: clamp(1.3rem, 7vw, 1.9rem);
+                padding: 8px 14px;
+                border-width: 2px;
+            }
+            .hero p { font-size: 0.88rem; }
+
+            .masonry-grid { column-count: 2; column-gap: 6px; }
+            .masonry-item { margin-bottom: 6px; border-radius: 6px; }
+
+            .item-event { font-size: 0.6rem; letter-spacing: 1.5px; }
+            .item-author { font-size: 0.75rem; }
+
+            /* Lightbox: image plus haute */
+            .lightbox-inner img,
+            #lb-video {
+                max-height: 58vh;
+            }
+        }
+
+        /* ─────────────────────────────────────────────
+           PETIT MOBILE  (≤ 480px)
+        ───────────────────────────────────────────── */
+        @media screen and (max-width: 480px) {
+            .viking-nav { min-height: 65px; padding: 0 14px; }
+            .main-logo { height: 46px; width: 46px; }
+            .nav-logo a { font-size: 1rem; }
+            .nav-links { width: 85%; }
+
+            /* top sticky = navbar à 65px */
+            .filters-section {
+                top: 65px;
+                padding: 9px 12px;
+            }
+            .filter-toggle-btn { font-size: 0.72rem; padding: 8px 12px; }
+
+            .hero { padding: 22px 14px 16px; }
+
+            /* 1 seule colonne = galerie portrait propre */
+            .gallery-section { padding: 12px 12px 70px; }
+            .masonry-grid { column-count: 1; column-gap: 0; }
+            .masonry-item { margin-bottom: 10px; border-radius: 10px; }
+
+            /* Image pleine largeur dans la lightbox */
+            .lightbox-inner img,
+            #lb-video {
+                max-width: 100vw;
+                max-height: 52vh;
+                border-radius: 4px;
+            }
+
+            /* Flèches écartées des bords */
+            .lightbox-prev { left: 4px; padding: 18px 12px; }
+            .lightbox-next { right: 4px; padding: 18px 12px; }
+
+            .lb-audio-wrapper { padding: 24px 14px; }
+            #lb-audio { width: 86vw; }
+        }
+
+        /* ─────────────────────────────────────────────
+           TRÈS PETIT  (≤ 360px)
+        ───────────────────────────────────────────── */
+        @media screen and (max-width: 360px) {
+            .hero h1 { font-size: 1.2rem; }
+            .filter-toggle-btn { font-size: 0.68rem; padding: 7px 10px; }
+        }
+
+        .toggle .line1 { transform: rotate(-45deg) translate(-5px, 6px); }
+        .toggle .line2 { opacity: 0; }
+        .toggle .line3 { transform: rotate(45deg) translate(-5px, -6px); }
+
+    </style>
+</head>
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <nav class="viking-nav" id="navbar">
+        <div class="nav-logo-container">
+            <img src="images/LogoDrakkartRaster.png" alt="Logo" class="main-logo">
+            <div class="nav-logo">
+                <a href="index.html">DRAKK'ART</a>
+            </div>
+        </div>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html">Le Village</a></li>
+            <li><a href="famille.html">La Famille</a></li>
+            <li><a href="saga.html">La Saga</a></li>
+            <li><a href="forge.html" style="color: var(--gold);">La Forge</a></li>
+            <li><a href="clans.html">Les Clans</a></li>
+            <li><a href="conquete.html" class="jv-btn">La Conquête</a></li>
+        </ul>
+
+        <div class="burger" id="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
+
+    <!-- ===================== HERO ===================== -->
+    <section class="hero">
+        <h1>La Forge des Drakks</h1>
+        <p>Découvrez toutes les créations et les aventures de nos artistes.</p>
+    </section>
+
+    <!-- ===================== FILTRES ===================== -->
+    
+    <!-- Backdrop pour fermer le drawer des filtres -->
+    <button class="floating-filter-btn" id="floating-filter-btn">⚙ Filtres</button>
+
+    <div class="filters-section" id="filters-section">
+        <div class="filters-label">Filtrer par événement</div>
+        <div class="filters-row" id="filters-row">
+            <button class="close-filter-btn" id="close-filter-btn">✕</button>
+            </div>
+    </div>
+    <div class="filters-backdrop" id="filters-backdrop"></div>
+
+    <!-- ===================== GALERIE ===================== -->
+    <section class="gallery-section">
+        <div class="gallery-count" id="gallery-count"></div>
+        <div class="masonry-grid" id="masonry-grid">
+            <!-- Généré par JS -->
+        </div>
+    </section>
+
+    <!-- ===================== LIGHTBOX ===================== -->
+    <!-- ===================== LIGHTBOX ===================== -->
+    <div class="lightbox-overlay" id="lightbox">
+        <div class="lightbox-inner">
+            <button class="lightbox-close" id="lb-close">✕</button>
+            <!-- Image -->
+            <img src="" alt="" id="lb-img">
+            <!-- Vidéo -->
+            <video id="lb-video" controls playsinline></video>
+            <iframe id="lb-youtube" frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="display:none; width: 90vw; height: 50vw; max-height: 70vh; max-width: 1200px; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);"></iframe>
+            <!-- Audio -->
+            <div class="lb-audio-wrapper" id="lb-audio-wrapper">
+                <div class="lb-audio-icon">♫</div>
+                <div class="lb-audio-title" id="lb-audio-title"></div>
+                <audio id="lb-audio" controls></audio>
+            </div>
+            <div class="lightbox-info">
+                <div class="lightbox-event" id="lb-event"></div>
+                <div class="lightbox-author" id="lb-author"></div>
+            </div>
+        </div>
+        <button class="lightbox-prev" id="lb-prev">&#8592;</button>
+        <button class="lightbox-next" id="lb-next">&#8594;</button>
+    </div>
+
+    
+
+    <script>
+    /* ================================================================
+       DONNÉES DE LA GALERIE
+       
+       Structure :
+       {
+           event:  "Nom de l'événement",
+           src:    "chemin/vers/fichier",
+           author: "Auteur",
+           title:  "Titre optionnel",
+           type:   "image" | "video" | "audio"   ← optionnel, défaut = "image"
+       }
+       
+       Exemples d'ajout de vidéo :
+       { event: "Icares", src: "images/Forge/Icares/film.mp4", author: "Gaël", type: "video" }
+       
+       Exemples d'ajout d'audio :
+       { event: "Chansons", src: "images/Forge/Musiques/chanson.mp3", author: "Nina", title: "Hymne des Drakks", type: "audio" }
+    ================================================================ */
+    const PHOTOS = [
+        { event: "Crochet", src: "images/Forge/Crochet/bonneeeet.jpg", author: "Crochet" },
+{ event: "Crochet", src: "images/Forge/Crochet/Chaaaat.jpg", author: "Crochet" },
+{ event: "Crochet", src: "images/Forge/Crochet/DSC00711.JPG", author: "Crochet" },
+{ event: "Crochet", src: "images/Forge/Crochet/lapiiiiin.jpeg", author: "Crochet" },
+{ event: "Crochet", src: "images/Forge/Crochet/poulpy.jpg", author: "Crochet" },
+{ event: "Crochet", src: "images/Forge/Crochet/Roses.JPG", author: "Crochet" },
+{ event: "Crochet", src: "images/Forge/Crochet/Petite fleur en crochet.jpeg", author: "Crochet" },
+
+        { event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_1585.jpg", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_1587.jpg", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_1588.jpg", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5215.JPG", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5221.JPG", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5222.JPG", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5226.JPG", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5228.JPG", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5230.JPG", author: "Dessin Charlotte" },
+{ event: "Dessin Charlotte", src: "images/Forge/Dessin Charlotte/IMG_5231.JPG", author: "Dessin Charlotte" },
+
+       { event: "Dessin Paul", src: "images/Forge/Dessin Paul/double kanae.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/Illustration Haruka.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/illustration Otsuki Akira.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/image.png", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20230508_161721.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20230621_165624.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20230914_165028.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20231223_182713.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20240219_141014.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20240219_141028.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20240526_141525.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20251111_100442.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20251122_115656.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260306_184133.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260308_204602.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_130608.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_130623.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_130946.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_130954.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_131344.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_131356.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_131403.jpg", author: "Dessin Paul" },
+{ event: "Dessin Paul", src: "images/Forge/Dessin Paul/IMG_20260329_131412.jpg", author: "Dessin Paul" },
+
+        { event: "dessins heiva", src: "images/Forge/dessins heiva/B36FAC49-8FB5-46BE-9E3A-DB441F4A54E6.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_0604.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_2968.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_2969.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_2970.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_2973.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6553.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6716.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6717.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6718.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6920.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6923.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6925.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6926.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6927.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6929(1).jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6929.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6932.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_6933.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8724.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8725.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8726.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8727.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8728.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8730.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8732.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8736.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8738.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8739.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8740.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8752.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8755.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8756.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8759.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8760.jpg", author: "dessins heiva" },
+{ event: "dessins heiva", src: "images/Forge/dessins heiva/IMG_8761.jpg", author: "dessins heiva" },
+
+{ event: "Icares", src: "images/Forge/Icares/Court métrage Icares.JPG", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/fresque avec tout le monde.jpg", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/fresque seule.jpg", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/IcaresBD.pdf", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/Peinture Icare 1.JPG", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/Peinture icares.JPG", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/Photo icares thomas.JPG", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/poème.png", author: "Icares" },
+{ event: "Icares", src: "images/Forge/Icares/Récitation poésie.jpeg", author: "Icares" },
+
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/PB212025.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/PC180034 (2).JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/PC180040 (2).JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/PC180060 (2).JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/48633BE4-C03B-4E20-B856-AC0EFB7DB901.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/49C9DCC0-E379-482B-AC88-BE4FADC48FC7.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/66635670410__8D6D0A57-5602-4213-8592-D73888A68E3F.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/69642314067__AAFBDF10-CC88-4038-BDC6-97812D5C6FC7.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/69661170263__F95F05D5-58D1-442A-8E6B-F5ED29DCF73B.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/70860956435__9950408D-9BF0-4945-AB06-4944C792CB2E.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/A7A4FE26-B3E9-4083-AB6B-B3F131E471B2.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/B32D122B-DFF7-4DE3-98BC-E76A1329A907.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/CCCDDF87-F718-494A-9A61-CB28AC154A36.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/coq.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/diable.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/fourmillier.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/hyppocampe.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0499.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0785.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0829.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0886.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0935.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0989.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_0990.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1171.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1243.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1393.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1395.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1541.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1704.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1820.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1962.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_1986.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2079.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2080.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2081.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2082.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2083.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2084.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2085.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2117.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2154.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2468.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2503.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2504.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2505.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2507.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2669.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2743.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_2781.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3060.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3083.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3095.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3152.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3246.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3452.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3622.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3751.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3834.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3835.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_3856.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_4084.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_4270.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_4275.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_5292.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_5347.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_6923.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_6924.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_7350.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_7352.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_7555.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_7746.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_7893.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_7982.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8019.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8027.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8084.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8102.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8129.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8270.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8289.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8291.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8381.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8382.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8384.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8385.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8443.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8470.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_8592.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_9229.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_9391.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_9396.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/IMG_9954.jpeg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/kusudama.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PB212037.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180027.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180028.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180033.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180037.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180045.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180048.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/PC180063.JPG", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/poulpe.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/squid2.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/tess3 copie.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/tess3.jpg", author: "Origamis Paul x Photo Thomas" },
+{ event: "Origamis Paul x Photo Thomas", src: "images/Forge/Origamis Paul x Photo Thomas/origami_photos/tess4.jpg", author: "Origamis Paul x Photo Thomas" },
+
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215507.mp4", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215814.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215833.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215839.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215847.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215854.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/20250918_215902.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Drakoctober.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Flash_gateau.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Flash_heiva-Quentin.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Heiva-quentin-crous.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Joséphine.jpg", author: "Photo importés par Léia" },
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Quentin_joséphine.jpg", author: "Photo importés par Léia" },
+
+{ event: "Photo importés par Léia", src: "images/Forge/Photo importés par Léia/Dessine ton dragon.jpg", author: "Photo importés par Léia" },
+
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/A8E11742-558E-4406-81FD-8962C365E61B.jpg", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/B9B79567-ED4E-4F7C-9723-87F3AF6DA682.jpg", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_0316.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_0764.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3089.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3095.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3108.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3120.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3122.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3129.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_3634.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_6246.JPG", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_7458.CR2", author: "Photos Sylene" },
+{ event: "Photos Sylene", src: "images/Forge/Photos Sylene/IMG_7509.CR2", author: "Photos Sylene" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P1010014.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P1010025.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P4201012-2.jpg", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P5190818.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P7170227.jpg", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P8141869.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P8190443.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P9200508.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P9200545.JPG", author: "Photos Thomas" },
+{ event: "Photos Thomas", src: "images/Forge/Photos Thomas/P9230660.JPG", author: "Photos Thomas" },
+
+        {event: "Musique", src:"musique/JVMusiqueIle.mp3", author: "Gaël"},
+        {event: "Musique", src:"musique/JVMusiquePlage.mp3", author: "Gaël"},
+
+        { event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/Bang.png", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/Hurricane Remix.mp3", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/Remid opening.mp4", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/Remix sonnerie Champollion anime ver.mp3", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/Screenshot 2026-03-30 225641.png", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/Spectre.mp3", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/UnnamedPreview.mp3", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/UpsideDownPreview.mp3", author: "Diverses choses de Gaël" },
+{ event: "Diverses choses de Gaël", src: "images/Forge/Diverses choses de Gaël/WEAWrath.mp4", author: "Diverses choses de Gaël" },
+{ event: "Film", src: "cXGe6wyJMnM", author: "Le Bureau", type: "youtube" },
+        { event: "Film", src: "xhu1OvR_Wfg", author: "Le Bureau", type: "youtube" } 
+    ];
+    
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    /* ── Génération des boutons de filtre ── */
+    const events = ["Tous", ...new Set(PHOTOS.map(p => p.event))];
+    const filtersRow = document.getElementById('filters-row');
+    const filterActiveLabel = document.getElementById('filter-active-label');
+
+    events.forEach(ev => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (ev === 'Tous' ? ' active' : '');
+        btn.textContent = ev;
+        btn.dataset.event = ev;
+        btn.addEventListener('click', () => {
+            filterGallery(ev);
+            closeFilterDrawer(); // ferme le drawer sur mobile après sélection
+        });
+        filtersRow.appendChild(btn);
+    });
+
+    /* ── Filter Drawer (mobile) ── */
+    const floatingFilterBtn = document.getElementById('floating-filter-btn'); // Nouveau bouton
+    const closeFilterBtn = document.getElementById('close-filter-btn');       // Croix
+    const filtersBackdrop = document.getElementById('filters-backdrop');
+
+    function openFilterDrawer() {
+        filtersRow.classList.add('drawer-open');
+        filtersBackdrop.classList.add('visible');
+    }
+
+    function closeFilterDrawer() {
+        filtersRow.classList.remove('drawer-open');
+        filtersBackdrop.classList.remove('visible');
+    }
+
+    // On écoute le nouveau bouton flottant
+    if (floatingFilterBtn) {
+        floatingFilterBtn.addEventListener('click', openFilterDrawer);
+    }
+    
+    // On écoute la croix
+    if (closeFilterBtn) {
+        closeFilterBtn.addEventListener('click', closeFilterDrawer);
+    }
+
+    // Fermer quand on clique à côté (même si l'assombrissement est transparent)
+    filtersBackdrop.addEventListener('click', closeFilterDrawer);
+
+    /* ── Galerie ── */
+    const grid = document.getElementById('masonry-grid');
+    const countEl = document.getElementById('gallery-count');
+    let currentFilter = 'Tous';
+    let currentLbIndex = 0;
+    let visibleIndices = [];
+
+    /* Détecte automatiquement si c'est une image, vidéo ou audio selon l'extension */
+    function getMediaType(photo) {
+        if (photo.type) return photo.type; // S'il est forcé à la main, on le garde
+        const ext = photo.src.split('.').pop().toLowerCase();
+        if (['mp4', 'webm', 'ogg', 'mov'].includes(ext)) return 'video';
+        if (['mp3', 'wav', 'm4a'].includes(ext)) return 'audio';
+        return 'image';
+    }
+
+    /* Génère le HTML d'un item selon son type */
+    function getItemInnerHTML(photo) {
+        const type = getMediaType(photo);
+        const overlayHTML = `
+            <div class="item-overlay">
+                <div class="item-event">${photo.event}</div>
+                <div class="item-author">✦ ${photo.author}</div>
+            </div>`;
+
+        if (type === 'video') {
+            return `
+                <video src="${photo.src}" muted preload="metadata" class="item-media-video" style="pointer-events:none;"></video>
+                <div class="item-play-icon">▶</div>
+                ${overlayHTML}`;
+        } else if (type === 'youtube') {
+            // Nouveau bloc pour YouTube : on utilise l'ID de la vidéo pour générer l'image
+            return `
+                <img src="https://img.youtube.com/vi/${photo.src}/hqdefault.jpg" alt="YouTube Video" loading="lazy">
+                <div class="item-play-icon" style="background: rgba(220, 38, 38, 0.85);">▶</div>
+                ${overlayHTML}`;
+        } else if (type === 'audio') {
+            return `
+                <div class="item-audio-card">
+                    <div class="item-audio-icon">♫</div>
+                    <div class="item-audio-title">${photo.title || photo.author}</div>
+                </div>
+                ${overlayHTML}`;
+        } else {
+            return `
+                <img src="${photo.src}" alt="${photo.title || photo.event} — ${photo.author}" loading="lazy">
+                ${overlayHTML}`;
+        }
+    }
+
+    function displayPhotos(photosToDisplay) {
+        grid.innerHTML = '';
+        visibleIndices = [];
+
+        photosToDisplay.forEach((photo) => {
+            const originalIdx = PHOTOS.indexOf(photo);
+            visibleIndices.push(originalIdx);
+
+            const item = document.createElement('div');
+            item.className = 'masonry-item';
+            item.dataset.event = photo.event;
+            item.dataset.index = originalIdx;
+            item.innerHTML = getItemInnerHTML(photo);
+            item.addEventListener('click', () => openLightbox(originalIdx));
+            grid.appendChild(item);
+        });
+    }
+
+    function filterGallery(eventName) {
+        currentFilter = eventName;
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.event === eventName);
+        });
+        // Mise à jour du label actif (mobile)
+        if (filterActiveLabel) filterActiveLabel.textContent = eventName;
+
+        let filteredPhotos = eventName === 'Tous'
+            ? [...PHOTOS]
+            : PHOTOS.filter(p => p.event === eventName);
+
+        filteredPhotos = shuffleArray(filteredPhotos);
+        displayPhotos(filteredPhotos);
+        updateCount(filteredPhotos.length);
+    }
+
+    filterGallery('Tous');
+
+    function updateCount(n) {
+        countEl.textContent = n + ' création' + (n > 1 ? 's' : '');
+    }
+
+    /* ── Lightbox ── */
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbVideo = document.getElementById('lb-video');
+    const lbYoutube = document.getElementById('lb-youtube');
+    const lbAudio = document.getElementById('lb-audio');
+    const lbAudioWrapper = document.getElementById('lb-audio-wrapper');
+    const lbAudioTitle = document.getElementById('lb-audio-title');
+    const lbEvent = document.getElementById('lb-event');
+    const lbAuthor = document.getElementById('lb-author');
+
+    function openLightbox(photoIndex) {
+        currentLbIndex = visibleIndices.indexOf(photoIndex);
+        showLbPhoto();
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function showLbPhoto() {
+        const idx = visibleIndices[currentLbIndex];
+        const photo = PHOTOS[idx];
+        const type = getMediaType(photo);
+
+        // Réinitialiser tous les médias
+        lbImg.style.display = 'none';
+        lbImg.src = '';
+        lbVideo.style.display = 'none';
+        lbVideo.pause();
+        lbVideo.src = '';
+        lbYoutube.style.display = 'none'; // Ajout pour YouTube
+        lbYoutube.src = '';               // Ajout pour YouTube
+        lbAudioWrapper.style.display = 'none';
+        lbAudio.pause();
+        lbAudio.src = '';
+
+        if (type === 'video') {
+            lbVideo.src = photo.src;
+            lbVideo.style.display = 'block';
+        } else if (type === 'youtube') {
+            // Ajout pour YouTube : On charge l'URL embed avec l'autoplay
+            lbYoutube.src = `https://www.youtube.com/embed/${photo.src}?autoplay=1`;
+            lbYoutube.style.display = 'block';
+        } else if (type === 'audio') {
+            lbAudioTitle.textContent = photo.title || photo.author;
+            lbAudio.src = photo.src;
+            lbAudioWrapper.style.display = 'flex';
+        } else {
+            lbImg.src = photo.src;
+            lbImg.alt = photo.author;
+            lbImg.style.display = 'block';
+        }
+
+        lbEvent.textContent = photo.event;
+        lbAuthor.textContent = '✦ ' + photo.author;
+    }
+
+    function closeLightbox() {
+        lb.classList.remove('open');
+        document.body.style.overflow = '';
+        lbImg.src = '';
+        lbVideo.pause(); lbVideo.src = '';
+        lbYoutube.src = ''; // Coupe le son YouTube à la fermeture
+        lbAudio.pause(); lbAudio.src = '';
+    }
+
+    document.getElementById('lb-close').addEventListener('click', closeLightbox);
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+
+    document.getElementById('lb-prev').addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentLbIndex = (currentLbIndex - 1 + visibleIndices.length) % visibleIndices.length;
+        showLbPhoto();
+    });
+
+    document.getElementById('lb-next').addEventListener('click', (e) => {
+        e.stopPropagation();
+        currentLbIndex = (currentLbIndex + 1) % visibleIndices.length;
+        showLbPhoto();
+    });
+
+    document.addEventListener('keydown', e => {
+        if (!lb.classList.contains('open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') { currentLbIndex = (currentLbIndex - 1 + visibleIndices.length) % visibleIndices.length; showLbPhoto(); }
+        if (e.key === 'ArrowRight') { currentLbIndex = (currentLbIndex + 1) % visibleIndices.length; showLbPhoto(); }
+    });
+
+    /* ── Swipe tactile (mobile) ── */
+    let touchStartX = 0;
+    let touchStartY = 0;
+    lb.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    lb.addEventListener('touchend', e => {
+        if (!lb.classList.contains('open')) return;
+        const dx = touchStartX - e.changedTouches[0].clientX;
+        const dy = touchStartY - e.changedTouches[0].clientY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 48) {
+            if (dx > 0) {
+                currentLbIndex = (currentLbIndex + 1) % visibleIndices.length;
+            } else {
+                currentLbIndex = (currentLbIndex - 1 + visibleIndices.length) % visibleIndices.length;
+            }
+            showLbPhoto();
+        }
+    }, { passive: true });
+
+    /* ── Navbar ── */
+    window.onscroll = function() {
+        const nav = document.getElementById('navbar');
+        nav.classList.toggle('shrunk', window.pageYOffset > 50);
+    };
+
+    const burger = document.getElementById('burger');
+    const navLinks = document.getElementById('nav-links');
+
+    burger.addEventListener('click', () => {
+        navLinks.classList.toggle('nav-active');
+        burger.classList.toggle('toggle');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('nav-active');
+            burger.classList.remove('toggle');
+        });
+    });
+    </script>
+
+    <footer class="viking-footer">
+        <div class="footer-container">
+            <div class="footer-box school-box">
+                <a href="https://centralelille.fr/" target="_blank" class="school-logo-link">
+                    <img src="images/logo-ecole-centrale-lille-2024.png" alt="Logo Centrale Lille" class="school-logo">
+                </a>
+                <p>Centrale Lille Institut<br>Cité Scientifique<br>59651 Villeneuve d'Ascq</p>
+            </div>
+
+            <div class="footer-box social-box">
+                <h3>REJOIGNEZ LE RAID</h3>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/deer.8691241/" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.058-1.69-.072-4.949-.072zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                        </svg>
+                        deer.8691241
+                    </a>
+                    <a href="https://www.facebook.com/search/top?q=lomane%20danton" target="_blank" class="social-link">
+                        <svg class="social-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
+                        </svg>
+                        Lomane Danton (Banane)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 Drakk'Art - Liste BDA Centrale Lille. Tous droits réservés au Valhalla.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
