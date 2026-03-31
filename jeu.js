@@ -942,7 +942,7 @@ class Mouette {
 
         // Logique de tir
         this.cooldown = 0; 
-        this.cooldownMax = 150; // Tire toutes les ~2.5 secondes
+        this.cooldownMax = 280; // Tire toutes les ~2.5 secondes
     }
 
     update(player) {
@@ -1139,7 +1139,7 @@ function initPhase(phase) {
 
         enemies = [];
         enemies.push(new Espadon(500, canvas.height-710*scaleF));
-        enemies.push(new Mouette(1700, 100 * scaleF));
+        enemies.push(new (1700, 100 * scaleF));
         enemies.push(new Mouette(2000, 100 * scaleF));
         enemies.push(new Poney(2400, canvas.height - 400 * scaleF));
         enemies.push(new Espadon(3000,canvas.height-710*scaleF ));
